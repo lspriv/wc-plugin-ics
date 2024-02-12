@@ -13,15 +13,10 @@ const STDIO_IGNORE = { stdio: 'ignore' };
 
 const npmInstall = () => {
   try {
-    execSync('pnpm -v', STDIO_IGNORE);
-    execSync('pnpm i', ENV);
+    execSync('cnpm -v', STDIO_IGNORE);
+    execSync('cnpm i', ENV);
   } catch (e) {
-    try {
-      execSync('cnpm -v', STDIO_IGNORE);
-      execSync('cnpm i', ENV);
-    } catch (e) {
-      execSync('npm i', ENV);
-    }
+    execSync('npm i', ENV);
   }
 };
 

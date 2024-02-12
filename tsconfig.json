@@ -17,7 +17,8 @@
         }
     },
     "files": [
-        "node_modules/miniprogram-api-typings/index.d.ts"
+        "node_modules/miniprogram-api-typings/index.d.ts",
+        "node_modules/@lspriv/wc-shared/global.d.ts"
     ],
     "include": [
         "src/**/*.ts"

@@ -4,6 +4,7 @@
   "description": "小程序日历组件订阅插件",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "miniprogram": "dist",
   "files": [
     "dist/"
   ],
@@ -27,8 +28,8 @@
   },
   "homepage": "https://github.com/lspriv/wc-plugin-ics#readme",
   "devDependencies": {
-    "@lspriv/wc-shared": "^1.0.0-alpha.6",
-    "@lspriv/wx-calendar": "^1.5.8-alpha.1",
+    "@lspriv/wc-shared": "^1.0.0-alpha.7",
+    "@lspriv/wx-calendar": "^1.5.8-alpha.2",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
