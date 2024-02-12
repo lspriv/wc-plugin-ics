@@ -1,0 +1,17 @@
+lockfileVersion: '6.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+dependencies:
+  '@lspriv/wx-calendar':
+    specifier: ^1.5.7
+    version: 1.5.7
+
+packages:
+
+  /@lspriv/wx-calendar@1.5.7:
+    resolution: {integrity: sha512-ReTCMejcG7FyoUCLECMHOe5rrFHAq/QYO0DzqERpYkHL64nBy2W7DjVIc8+ocRvqQMt6DX2gaWRUQGuySuaYTg==}
+    engines: {node: '>=16.13.0'}
+    dev: false

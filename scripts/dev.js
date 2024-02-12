@@ -3,12 +3,12 @@ const path = require('path');
 const { watch } = require('rollup');
 const { loadConfigFile } = require('rollup/loadConfigFile');
 const { execSync } = require('child_process');
-const { PROJECT_PATH, cli, time } = require('./utils');
+const { PRJ_PATH, cli, now } = require('./utils');
 const ora = require('ora');
 
 require('colors');
 
-const ENV = { cwd: PROJECT_PATH, stdio: 'ignore' };
+const ENV = { cwd: PRJ_PATH, stdio: 'ignore' };
 const STDIO_IGNORE = { stdio: 'ignore' };
 
 const npmInstall = () => {
@@ -62,20 +62,25 @@ let currTime = 0;
   watcher.on('event', async e => {
     if (e.code === 'START') {
       currTime = process.uptime();
-      console.log(`[${time().grey}] Starting ` + `pack`.cyan + `...`);
+      console.log(`[${now().grey}] Starting ` + `pack`.cyan + `...`);
     }
     if (e.result) e.result.close();
     if (e.code === 'END') {
       const timediff = (process.uptime() - currTime).toFixed(3);
-      const timestr = timediff > 1 ? `${timediff} s`.magenta : `${timediff * 1000} ms`.magenta;
-      console.log(`[${time().grey}] Finished ` + `pack`.cyan + ` after ` + timestr);
+      const timestr = timediff > 1 ? `${timediff} s` : `${timediff * 1000} ms`;
+      console.log(`[${now().grey}] Finished ` + `pack`.cyan + ` after ` + timestr.magenta);
       if (Flag) {
         cli('reset-fileutils', true, STDIO_IGNORE);
       } else {
-        console.log(`[${time().grey}] Starting ` + `watch`.cyan + `...`);
+        console.log(`[${now().grey}] Starting ` + `watch`.cyan + `...`);
         cli('open', true, STDIO_IGNORE);
         Flag = true;
       }
+    }
+    if (e.code === 'ERROR') {
+      console.log(`[${now().grey}]`, 'Error'.red, e.error.message);
+      watcher.close();
+      process.exit(0);
     }
   });
 })();
