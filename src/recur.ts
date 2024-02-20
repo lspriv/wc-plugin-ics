@@ -177,9 +177,9 @@ export const numericDayToIcalDay = (num: number, weekstart?: WeekDay) => {
 };
 
 const partDesign = {
-  BYSECOND: parseNumericValue.bind(this, 'BYSECOND', 0, 60),
-  BYMINUTE: parseNumericValue.bind(this, 'BYMINUTE', 0, 59),
-  BYHOUR: parseNumericValue.bind(this, 'BYHOUR', 0, 23),
+  BYSECOND: parseNumericValue.bind(null, 'BYSECOND', 0, 60),
+  BYMINUTE: parseNumericValue.bind(null, 'BYMINUTE', 0, 59),
+  BYHOUR: parseNumericValue.bind(null, 'BYHOUR', 0, 23),
   BYDAY: function (value) {
     if (VALID_BYDAY_PART.test(value)) {
       return value;
@@ -187,11 +187,11 @@ const partDesign = {
       throw new Error('invalid BYDAY value "' + value + '"');
     }
   },
-  BYMONTHDAY: parseNumericValue.bind(this, 'BYMONTHDAY', -31, 31),
-  BYYEARDAY: parseNumericValue.bind(this, 'BYYEARDAY', -366, 366),
-  BYWEEKNO: parseNumericValue.bind(this, 'BYWEEKNO', -53, 53),
-  BYMONTH: parseNumericValue.bind(this, 'BYMONTH', 1, 12),
-  BYSETPOS: parseNumericValue.bind(this, 'BYSETPOS', -366, 366)
+  BYMONTHDAY: parseNumericValue.bind(null, 'BYMONTHDAY', -31, 31),
+  BYYEARDAY: parseNumericValue.bind(null, 'BYYEARDAY', -366, 366),
+  BYWEEKNO: parseNumericValue.bind(null, 'BYWEEKNO', -53, 53),
+  BYMONTH: parseNumericValue.bind(null, 'BYMONTH', 1, 12),
+  BYSETPOS: parseNumericValue.bind(null, 'BYSETPOS', -366, 366)
 };
 
 /**
