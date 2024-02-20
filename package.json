@@ -1,6 +1,6 @@
 {
   "name": "@lspriv/wc-plugin-ics",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0",
   "description": "小程序日历组件订阅插件",
   "main": "./dist/index.js",
   "types": "./types/index.d.ts",
@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/lspriv/wc-plugin-ics#readme",
   "devDependencies": {
+    "@inquirer/prompts": "^3.3.2",
     "@lspriv/wc-shared": "^1.1.0",
     "@lspriv/wx-calendar": "^1.6.0",
     "@rollup/plugin-commonjs": "^25.0.7",
@@ -40,6 +41,7 @@
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "colors": "^1.4.0",
+    "commander": "^12.0.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
