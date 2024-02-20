@@ -4,7 +4,7 @@
  * See File LICENSE for detail or copy at https://opensource.org/licenses/MIT
  * @Description: Description
  * @Author: lspriv
- * @LastEditTime: 2024-02-11 19:39:12
+ * @LastEditTime: 2024-02-18 08:20:54
  */
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
@@ -29,6 +29,9 @@ const PRO_OUTDIR = 'dist';
 
 const OUTDIR = isDevelop ? DEV_OUTDIR : PRO_OUTDIR;
 
+const TsOpts = { tsconfig: './tsconfig.json' };
+isDevelop && (TsOpts.declaration = true) && (TsOpts.declarationDir = DEV_OUTDIR);
+
 /**
  * @type {import('rollup').RollupOptions}
  */
@@ -46,17 +49,14 @@ export default {
     moduleSideEffects: false,
     propertyReadSideEffects: false
   },
+  external: ['@lspriv/wx-calendar/lib'],
   plugins: [
     clear({
-      targets: [DEV_OUTDIR, PRO_OUTDIR],
+      targets: [DEV_OUTDIR, PRO_OUTDIR, 'types'],
       silent: true
     }),
     resolve(),
-    typescript({
-      tsconfig: './tsconfig.json',
-      declaration: true,
-      outDir: OUTDIR
-    }),
+    typescript(TsOpts),
     commonjs({
       include: [/node_modules/, /src/],
       extensions: ['.js', '.ts']
