@@ -4,26 +4,27 @@
  * See File LICENSE for detail or copy at https://opensource.org/licenses/MIT
  * @Description: Description
  * @Author: lspriv
- * @LastEditTime: 2024-02-20 09:47:45
+ * @LastEditTime: 2024-02-20 19:42:01
  */
 import {
   type Plugin,
   type TrackDateResult,
+  type TrackYearResult,
   type CalendarDay,
   type CalendarMark,
-  type CalendarDateMark,
-  type CalendarDateSchedule,
-  type WxCalendarYearMark,
-  type WxCalendarYearMarks,
+  type WcYear,
+  type WcMark,
+  type WcScheduleMark,
+  type WcAnnualMark,
+  type WcAnnualMarks,
   type PluginService,
   type Nullable,
   normalDate,
   isFunction,
   isString,
   nextTick,
-  formDateByStrKey,
-  TrackYearResult,
-  WxCalendarYear
+  promises,
+  formDateByStrKey
 } from '@lspriv/wx-calendar/lib';
 import { wxPromisify } from '@lspriv/wc-shared';
 import { JCal, JCalProp, parse } from './parse';
@@ -34,44 +35,44 @@ type PropsReturn<R, P extends any[] = []> = (properties: JCalPropDict, ...args: 
 type ICSComponentType = 'event' | 'alarm' | 'todo' | 'journal';
 type ICSComponentVType = `v${ICSComponentType}`;
 
-type ICS_COMP_TYPE_OPT<K extends string | void, T> = {
+type ICSCompTypeOpt<K extends string | void, T> = {
   [P in ICSComponentType as K extends string ? `${P}${K}` : P]?: T;
 };
 
-type ICS_COMP_TYPE_OPTS = ICS_COMP_TYPE_OPT<void, PropsReturn<ICSMark>> &
-  ICS_COMP_TYPE_OPT<'MarkAs', CalendarMark['type'] | Array<CalendarMark['type']>> &
-  ICS_COMP_TYPE_OPT<'FestivalName', PropsReturn<string>> &
-  ICS_COMP_TYPE_OPT<'FestivalColor', string | PropsReturn<string>> &
-  ICS_COMP_TYPE_OPT<'CornerText', PropsReturn<string>> &
-  ICS_COMP_TYPE_OPT<'CornerColor', string | PropsReturn<string>> &
-  ICS_COMP_TYPE_OPT<'ScheduleText', PropsReturn<string>> &
-  ICS_COMP_TYPE_OPT<'ScheduleColor', string | PropsReturn<string>> &
-  ICS_COMP_TYPE_OPT<'ScheduleBgColor', string | PropsReturn<string>>;
+type ICSCompTypeOpts = ICSCompTypeOpt<void, PropsReturn<ICSMark>> &
+  ICSCompTypeOpt<'MarkAs', CalendarMark['type'] | Array<CalendarMark['type']>> &
+  ICSCompTypeOpt<'FestivalName', PropsReturn<string>> &
+  ICSCompTypeOpt<'FestivalColor', string | PropsReturn<string>> &
+  ICSCompTypeOpt<'CornerText', PropsReturn<string>> &
+  ICSCompTypeOpt<'CornerColor', string | PropsReturn<string>> &
+  ICSCompTypeOpt<'ScheduleText', PropsReturn<string>> &
+  ICSCompTypeOpt<'ScheduleColor', string | PropsReturn<string>> &
+  ICSCompTypeOpt<'ScheduleBgColor', string | PropsReturn<string>>;
 
-export type ICS_OPTS = ICS_COMP_TYPE_OPTS & {
-  subcribes?: Array<ICS_SUBCRIBE>;
+export type ICSOpts = ICSCompTypeOpts & {
+  subcribes?: Array<ICSSubcribe>;
   parseDate?: PropsReturn<CalendarDay>;
-  collectAnuualMark?: PropsReturn<Set<WxCalendarYearMark>, [sets: WxCalendarYearMarks]>;
-  afterMarked?: (instance: ICSPlugin) => void;
+  collectAnuualMark?: PropsReturn<WcAnnualMark, [sets: WcAnnualMarks]>;
+  afterMarked?: (options: ICSSubcribeOpts, instance: ICSPlugin) => void;
 };
 
-type ICS_COMMON_OPTS = Omit<ICS_OPTS, 'subcribes'>;
+type ICSCommonOpts = Omit<ICSOpts, 'subcribes'>;
 
-export interface ICS_OPTS_GENERATION {
-  (instance: ICSPlugin): ICS_OPTS;
+export interface ICSOptsGeneration {
+  (instance: ICSPlugin): ICSOpts;
 }
 
-type ICS_SUBCRIBE_OPTS = ICS_COMMON_OPTS & {
+type ICSSubcribeOpts = ICSCommonOpts & {
   calname?: string;
   icskey?: string;
 };
 
-export interface ICS_SUBCRIBE_OPTS_GENERATION {
-  (instance: ICSPlugin): ICS_SUBCRIBE_OPTS;
+export interface ICSSubcribeOptsGeneration {
+  (instance: ICSPlugin): ICSSubcribeOpts;
 }
 
-export type ICS_SUBCRIBE = ICS_SUBCRIBE_OPTS & {
-  kind: 'link' | 'file' | 'content';
+export type ICSSubcribe = ICSSubcribeOpts & {
+  kind?: 'link' | 'file' | 'content';
   source: string;
 };
 
@@ -92,14 +93,14 @@ export interface CurrentSeries {
 }
 
 export type ICSMark = {
-  [P in keyof TrackDateResult]?: P extends 'schedule' ? CalendarDateSchedule : CalendarDateMark;
+  [P in keyof TrackDateResult]?: P extends 'schedule' ? WcScheduleMark : WcMark;
 };
 
 type ICSMarkSets = {
-  [P in keyof TrackDateResult]-?: Array<CalendarDateMark>;
+  [P in keyof TrackDateResult]-?: Array<WcMark>;
 };
 
-const subsKindValid = (kind: string) => ['link', 'file', 'content'].includes(kind);
+const subsKindValid = (kind: unknown) => ['link', 'file', 'content'].includes(kind as string);
 
 const collectProps = (compname: string, data: Array<JCalProp>): JCalPropDict => {
   return data.reduce(
@@ -124,22 +125,27 @@ const USEFUL_COMPONENTS = [
   JCAL_COMPONENT.JOURNAL
 ] as const;
 
+interface ICSUpdates {
+  dates: Array<CalendarDay>;
+  annuals: Array<number>;
+}
+
 export class ICSPlugin implements Plugin {
   static KEY = 'wc-plugin-ics' as const;
 
-  private options: ICS_OPTS;
+  private options: ICSOpts;
 
-  private subcribes: Array<ICS_SUBCRIBE> = [];
+  private subcribes: Array<ICSSubcribe> = [];
 
   marks: Map<string, ICSMarkSets> = new Map();
 
-  annualMarks: WxCalendarYearMarks = new Map();
+  annualMarks: WcAnnualMarks = new Map();
 
   // series: CurrentSeries = {};
 
-  private service: PluginService;
+  service: PluginService;
 
-  constructor(options?: ICS_OPTS | ICS_OPTS_GENERATION) {
+  constructor(options?: ICSOpts | ICSOptsGeneration) {
     this.options = this.formOptions(execPossibleFunc(options, this));
   }
 
@@ -149,13 +155,20 @@ export class ICSPlugin implements Plugin {
       await this.loadSubcribes(this.options.subcribes);
       if (service.component._loaded_) {
         const dates = [...this.marks.keys()].map(k => formDateByStrKey(k));
-        service.updateDates(dates);
+        dates.length && service.updateDates(dates);
+        if (this.annualMarks.size) {
+          const annuals = [...this.annualMarks.keys()].flatMap(key => {
+            const year = key.match(/^\d+/)?.[0];
+            return year ? parseInt(year) : [];
+          });
+          annuals.length && service.updateAnnuals(annuals);
+        }
       }
     }
     delete this.options.subcribes;
   }
 
-  private formOptions(options?: ICS_OPTS): ICS_OPTS {
+  private formOptions(options?: ICSOpts): ICSOpts {
     const eventMarkAs = Array.isArray(options?.eventMarkAs)
       ? options.eventMarkAs
       : [options?.eventMarkAs || 'schedule'];
@@ -179,14 +192,14 @@ export class ICSPlugin implements Plugin {
    * 加载订阅
    * @param subcribes 订阅集合
    */
-  private async loadSubcribes(subcribes: Array<ICS_SUBCRIBE>) {
+  private async loadSubcribes(subcribes: Array<ICSSubcribe>) {
     await nextTick();
     for (const subscribe of subcribes) {
       if (!subsKindValid(subscribe.kind)) subscribe.kind = 'link';
       if (!subscribe.source) throw new Error('invalid subcribe source');
 
       const vcalendar = await this.loadICS(subscribe);
-      const _subscribe: ICS_SUBCRIBE = {
+      const _subscribe: ICSSubcribe = {
         ...subscribe,
         calname: subscribe.calname || vcalendar['x-wr-calname'],
         icskey: subscribe.icskey || `${vcalendar.prodid}@${vcalendar.version}`
@@ -202,7 +215,7 @@ export class ICSPlugin implements Plugin {
    * @param source 来源
    * @param type 类型 link来自连接 file本地文件 content订阅内容
    */
-  private async loadICS(subcribe: ICS_SUBCRIBE) {
+  private async loadICS(subcribe: ICSSubcribe) {
     if (subcribe.kind === 'link') {
       const result = await wxPromisify(wx.downloadFile, { url: subcribe.source });
       return this.parseFile(result.tempFilePath);
@@ -214,13 +227,13 @@ export class ICSPlugin implements Plugin {
   }
 
   public async load(
-    subscribe: Pick<ICS_SUBCRIBE, 'source' | 'kind'>,
-    options?: ICS_SUBCRIBE_OPTS | ICS_SUBCRIBE_OPTS_GENERATION
+    subscribe: Pick<ICSSubcribe, 'source' | 'kind'>,
+    options?: ICSSubcribeOpts | ICSSubcribeOptsGeneration
   ): Promise<void>;
   public async load(
     source: string,
-    type?: ICS_SUBCRIBE['kind'],
-    options?: ICS_SUBCRIBE_OPTS | ICS_SUBCRIBE_OPTS_GENERATION
+    type?: ICSSubcribe['kind'],
+    options?: ICSSubcribeOpts | ICSSubcribeOptsGeneration
   ): Promise<void>;
 
   /**
@@ -229,17 +242,15 @@ export class ICSPlugin implements Plugin {
    * @param type 类型 link来自连接 file本地文件 content订阅内容
    */
   public async load(
-    source: string | Pick<ICS_SUBCRIBE, 'source' | 'kind'>,
-    type: ICS_SUBCRIBE['kind'] | ICS_SUBCRIBE_OPTS | ICS_SUBCRIBE_OPTS_GENERATION = 'link',
-    options?: ICS_SUBCRIBE_OPTS | ICS_SUBCRIBE_OPTS_GENERATION
+    source: string | Pick<ICSSubcribe, 'source' | 'kind'>,
+    type: ICSSubcribe['kind'] | ICSSubcribeOpts | ICSSubcribeOptsGeneration = 'link',
+    options?: ICSSubcribeOpts | ICSSubcribeOptsGeneration
   ) {
     const sourceIsStr = isString(source);
     const _source = sourceIsStr ? source : source.source;
-    const _kind = sourceIsStr ? (type as ICS_SUBCRIBE['kind']) : source.kind;
+    const _kind = sourceIsStr ? (type as ICSSubcribe['kind']) : source.kind;
     const kind = subsKindValid(_kind) ? _kind : 'link';
-    const typeOpts = sourceIsStr
-      ? null
-      : execPossibleFunc(type as ICS_SUBCRIBE_OPTS | ICS_SUBCRIBE_OPTS_GENERATION, this);
+    const typeOpts = sourceIsStr ? null : execPossibleFunc(type as ICSSubcribeOpts | ICSSubcribeOptsGeneration, this);
 
     const subscribe = {
       source: _source,
@@ -251,16 +262,19 @@ export class ICSPlugin implements Plugin {
       throw new Error('ics file loaded');
     }
     const vcalendar = await this.loadICS(subscribe);
-    const _subcribe: ICS_SUBCRIBE = {
+    const _subcribe: ICSSubcribe = {
       ...subscribe,
       calname: subscribe.calname || vcalendar['x-wr-calname'],
       icskey: subscribe.icskey || `${vcalendar.prodid}@${vcalendar.version}`
     };
     this.subcribes.push(_subcribe);
-    const updates = this.generateMarks(vcalendar.components, _subcribe);
+    const { dates, annuals } = this.generateMarks(vcalendar.components, _subcribe);
 
     if (this.service.component._loaded_) {
-      return this.service.updateDates(updates);
+      await promises([
+        dates.length && this.service.updateDates(dates),
+        annuals.length && this.service.updateAnnuals(annuals)
+      ]);
     }
   }
 
@@ -281,9 +295,10 @@ export class ICSPlugin implements Plugin {
     return { ...props, components: data[2] };
   }
 
-  private generateMarks(data: Array<JCal>, subOptions?: ICS_SUBCRIBE_OPTS) {
-    const options: ICS_SUBCRIBE_OPTS = { ...this.options, ...subOptions };
+  private generateMarks(data: Array<JCal>, subOptions?: ICSSubcribeOpts): ICSUpdates {
+    const options: ICSSubcribeOpts = { ...this.options, ...subOptions };
     const updates: CalendarDay[] = [];
+    const annualUpdates: Set<number> = new Set();
     for (const component of data) {
       const name = component[0];
       if (!USEFUL_COMPONENTS.includes(name as ICSComponentVType)) continue;
@@ -299,13 +314,16 @@ export class ICSPlugin implements Plugin {
       }
 
       const annualMark = options.collectAnuualMark?.(props, this.annualMarks);
-      if (annualMark) this.collectAnnualMark(key, annualMark);
+      if (annualMark) {
+        this.collectAnnualMark(key, annualMark);
+        annualUpdates.add(date.year);
+      }
     }
-    options.afterMarked?.(this);
-    return updates;
+    options.afterMarked?.(options, this);
+    return { dates: updates, annuals: [...annualUpdates] };
   }
 
-  private assignComponentHandle(props: JCalPropDict, options: ICS_SUBCRIBE_OPTS) {
+  private assignComponentHandle(props: JCalPropDict, options: ICSSubcribeOpts) {
     switch (props.compname) {
       case JCAL_COMPONENT.EVENT:
         return this.createIcsMark('event', props, options);
@@ -320,7 +338,7 @@ export class ICSPlugin implements Plugin {
     }
   }
 
-  private createIcsMark(type: ICSComponentType, props: JCalPropDict, options: ICS_SUBCRIBE_OPTS) {
+  private createIcsMark(type: ICSComponentType, props: JCalPropDict, options: ICSSubcribeOpts) {
     if (options[type]) return options[type]!(props);
 
     const markAs = options[`${type}MarkAs`] as Array<CalendarMark['type']>;
@@ -389,12 +407,11 @@ export class ICSPlugin implements Plugin {
     this.marks.set(key, m);
   }
 
-  private collectAnnualMark(key: string, mark: Set<WxCalendarYearMark>) {
+  private collectAnnualMark(key: string, mark: WcAnnualMark) {
     let m = this.annualMarks.get(key);
-    m = m || new Set();
-    for (const item of mark) {
-      m.add(item);
-    }
+    m = m || {};
+    mark.rwtype && (m.rwtype = mark.rwtype);
+    mark.sub && (m.sub = mark.sub);
     this.annualMarks.set(key, m);
   }
 
@@ -419,9 +436,9 @@ export class ICSPlugin implements Plugin {
     return result;
   }
 
-  PLUGIN_TRACK_YEAR(year: WxCalendarYear): Nullable<TrackYearResult> {
+  PLUGIN_TRACK_YEAR(year: WcYear): Nullable<TrackYearResult> {
     const regexp = new RegExp(`^${year.year}_`);
-    const marks: WxCalendarYearMarks = new Map();
+    const marks: WcAnnualMarks = new Map();
     const entries = this.annualMarks.entries();
     let flag = false;
     for (const [key, sets] of entries) {

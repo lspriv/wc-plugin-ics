@@ -4,10 +4,10 @@
  * See File LICENSE for detail or copy at https://opensource.org/licenses/MIT
  * @Description: Description
  * @Author: lspriv
- * @LastEditTime: 2024-02-20 08:09:18
+ * @LastEditTime: 2024-02-20 17:16:58
  */
-import { CalendarDateMark, WxCalendarYearMark } from '@lspriv/wx-calendar/lib';
-import type { ICSPlugin, ICS_OPTS, ICSMark, CurrentSeries } from './plugin';
+import { WcMark } from '@lspriv/wx-calendar/lib';
+import type { ICSOpts, ICSMark, CurrentSeries } from './plugin';
 
 const FtvPattern = /^[^\s]+/;
 
@@ -17,21 +17,25 @@ const workPattern = /(\u8865|\u52a0|\u4e0a)\u73ed/;
 /** 假期｜假日｜放假｜调休｜休息 */
 const restPattern = /(\u5047\u671f|\u5047\u65e5|\u653e\u5047|\u8c03\u4f11|\u4f11\u606f)/;
 
-export const ICSCnPreset = (plugin: ICSPlugin): ICS_OPTS => {
-  let series: CurrentSeries | null = {}; 
+const WORK_KEY = '__CN_PRE_WORK__';
+const REST_KEY = '__CN_PRE_REST__';
+
+export const ICSCnPreset = (): ICSOpts => {
+  let series: CurrentSeries = {};
 
   return {
     eventMarkAs: ['festival', 'corner', 'schedule'],
-    event: function(props) {
+    event: function (props) {
       const summary = props.summary as string;
       const isWork = workPattern.test(summary);
+      props[WORK_KEY] = isWork;
 
       const mark = {} as ICSMark;
       let flag = false;
 
       // 生成节假日
       if (!isWork) {
-        const date = +(new Date(props.date!.year, props.date!.month - 1, props.date!.day));
+        const date = +new Date(props.date!.year, props.date!.month - 1, props.date!.day);
         const name = summary.match(FtvPattern)?.[0] || summary;
 
         const seriename = series!.name;
@@ -48,19 +52,11 @@ export const ICSCnPreset = (plugin: ICSPlugin): ICS_OPTS => {
 
       // 生成角标
       const isRest = restPattern.test(summary);
+      props[REST_KEY] = isRest;
       if (isWork || isRest) {
-        mark.corner = { key: props.icskey } as CalendarDateMark;
+        mark.corner = { key: props.icskey } as WcMark;
         mark.corner.text = isWork ? '班' : '休';
         mark.corner.color = isWork ? '#f37b1d' : '#61b057';
-
-        // 生成年度标记
-        const annualMark: WxCalendarYearMark = isWork ? 'work' : 'rest';
-        const ak = `${props.date!.year}_${props.date!.month}_${props.date!.day}`;
-        let am = plugin.annualMarks.get(ak);
-        am = am || new Set();
-        am.add(annualMark);
-        plugin.annualMarks.set(ak, am);
-
         flag = true;
       }
 
@@ -80,8 +76,14 @@ export const ICSCnPreset = (plugin: ICSPlugin): ICS_OPTS => {
     alarmScheduleText: props => props.description as string,
     alarmScheduleColor: '#f56c6d',
     alarmScheduleBgColor: '#fde2e2',
-    afterMarked: function() {
-      series = null;
+    collectAnuualMark: function (props) {
+      if (props[REST_KEY] || props[WORK_KEY]) {
+        // 生成年度标记
+        return { rwtype: props[WORK_KEY] ? 'work' : 'rest' };
+      }
+    },
+    afterMarked: function () {
+      series = {};
     }
   };
-}
+};

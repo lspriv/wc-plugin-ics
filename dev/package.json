@@ -5,6 +5,6 @@
   "author": "lspriv",
   "license": "MIT",
   "dependencies": {
-    "@lspriv/wx-calendar": "^1.5.9-alpha.14"
+    "@lspriv/wx-calendar": "^1.5.9-alpha.16"
   }
 }
