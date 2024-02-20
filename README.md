@@ -7,7 +7,7 @@
 
 ### 使用
 - 小程序基础库 `SDKVersion` >= 3.0.0
-- 日历组件 [`wx-calendar`](https://github.com/lspriv/wx-calendar) >= 1.5.9
+- 日历组件 [`wx-calendar`](https://github.com/lspriv/wx-calendar) >= 1.6.0
 
 #### 安装
 ```bash
