@@ -9,8 +9,8 @@ import {
   type ICalRecurDict,
   type ICalRecur,
   fromData as ICalRecurFromData,
-  stringToData as ICalRecurStrToData,
-  numericDayToIcalDay
+  stringToData as ICalRecurStrToData
+  // numericDayToIcalDay
 } from './recur';
 
 const FROM_ICAL_NEWLINE = /\\\\|\\;|\\,|\\[Nn]/g;
@@ -25,9 +25,9 @@ export type DesignValueType<T, U extends any = any> = {
   /** A regular expression the value type must match (currently unused) */
   matches?: RegExp;
   fromICAL?(value: string, escape?: string): T;
-  toICAL?(value: T, escape?: string): string;
+  // toICAL?(value: T, escape?: string): string;
   decorate?(value: T, prop?: ICalProperty): U;
-  undecorate?(value: U): T;
+  // undecorate?(value: U): T;
 };
 
 export type DesignParamType = {
@@ -76,26 +76,26 @@ const createTextType = (fromline: RegExp, toline: RegExp): DesignValueType<strin
   matches: /.*/,
   fromICAL: function (value, escape) {
     return replaceNewline(value, fromline, escape!);
-  },
-  toICAL: function (value, escape) {
-    let regEx = toline;
-    if (escape) regEx = new RegExp(regEx.source + '|' + escape);
-    return value.replace(regEx, function (str) {
-      switch (str) {
-        case '\\':
-          return '\\\\';
-        case ';':
-          return '\\;';
-        case ',':
-          return '\\,';
-        case '\n':
-          return '\\n';
-        /* istanbul ignore next */
-        default:
-          return str;
-      }
-    });
   }
+  // toICAL: function (value, escape) {
+  //   let regEx = toline;
+  //   if (escape) regEx = new RegExp(regEx.source + '|' + escape);
+  //   return value.replace(regEx, function (str) {
+  //     switch (str) {
+  //       case '\\':
+  //         return '\\\\';
+  //       case ';':
+  //         return '\\;';
+  //       case ',':
+  //         return '\\,';
+  //       case '\n':
+  //         return '\\n';
+  //       /* istanbul ignore next */
+  //       default:
+  //         return str;
+  //     }
+  //   });
+  // }
 });
 
 interface DesignValue {
@@ -138,10 +138,10 @@ const ICalValues: DesignValue = {
           // TODO: parser warning
           return false;
       }
-    },
-    toICAL: function (value) {
-      return value ? 'TRUE' : 'FALSE';
     }
+    // toICAL: function (value) {
+    //   return value ? 'TRUE' : 'FALSE';
+    // }
   },
   float: {
     matches: /^[+-]?\d+\.\d+$/,
@@ -149,19 +149,19 @@ const ICalValues: DesignValue = {
       const parsed = parseFloat(value);
       // TODO: parser warning
       return isStrictlyNaN(parsed) ? 0.0 : parsed;
-    },
-    toICAL: function (value) {
-      return String(value);
     }
+    // toICAL: function (value) {
+    //   return String(value);
+    // }
   },
   integer: {
     fromICAL: function (value) {
       const parsed = parseInt(value);
       return isStrictlyNaN(parsed) ? 0 : parsed;
-    },
-    toICAL: function (value) {
-      return String(value);
     }
+    // toICAL: function (value) {
+    //   return String(value);
+    // }
   },
   'utc-offset': {
     fromICAL: function (value) {
@@ -175,34 +175,34 @@ const ICalValues: DesignValue = {
         return value.substr(0, 3) + ':' + value.substr(3, 2) + ':' + value.substr(5, 2);
       }
     },
-    toICAL: function (value) {
-      if (value.length < 7) {
-        // no seconds
-        // -0500
-        return value.substr(0, 3) + value.substr(4, 2);
-      } else {
-        // seconds
-        // -050000
-        return value.substr(0, 3) + value.substr(4, 2) + value.substr(7, 2);
-      }
-    },
+    // toICAL: function (value) {
+    //   if (value.length < 7) {
+    //     // no seconds
+    //     // -0500
+    //     return value.substr(0, 3) + value.substr(4, 2);
+    //   } else {
+    //     // seconds
+    //     // -050000
+    //     return value.substr(0, 3) + value.substr(4, 2) + value.substr(7, 2);
+    //   }
+    // },
     decorate: function (value) {
       return ICalUtcFromStr(value);
-    },
-
-    undecorate: function (value) {
-      return value.toString();
     }
+
+    // undecorate: function (value) {
+    //   return value.toString();
+    // }
   },
   text: createTextType(FROM_ICAL_NEWLINE, TO_ICAL_NEWLINE),
   uri: {},
   binary: {
     decorate: function (aString) {
       return ICalBinaryFromStr(aString);
-    },
-    undecorate: function (aBinary) {
-      return aBinary.toString();
     }
+    // undecorate: function (aBinary) {
+    //   return aBinary.toString();
+    // }
   },
   'cal-address': {},
   date: {
@@ -213,9 +213,9 @@ const ICalValues: DesignValue = {
         return ICalTimeFromStr(value, prop);
       }
     },
-    undecorate: function (value) {
-      return value.toString();
-    },
+    // undecorate: function (value) {
+    //   return value.toString();
+    // },
     fromICAL: function (value) {
       // from: 20120901
       // to: 2012-09-01
@@ -225,21 +225,21 @@ const ICalValues: DesignValue = {
       } else {
         return value.substr(0, 4) + '-' + value.substr(4, 2) + '-' + value.substr(6, 2);
       }
-    },
-    toICAL: function (value) {
-      // from: 2012-09-01
-      // to: 20120901
-      const len = value.length;
-
-      if (len == 10) {
-        return value.substr(0, 4) + value.substr(5, 2) + value.substr(8, 2);
-      } else if (len >= 19) {
-        return ICalValues['date-time'].toICAL!(value);
-      } else {
-        //TODO: serialize warning?
-        return value;
-      }
     }
+    // toICAL: function (value) {
+    //   // from: 2012-09-01
+    //   // to: 20120901
+    //   const len = value.length;
+
+    //   if (len == 10) {
+    //     return value.substr(0, 4) + value.substr(5, 2) + value.substr(8, 2);
+    //   } else if (len >= 19) {
+    //     return ICalValues['date-time'].toICAL!(value);
+    //   } else {
+    //     //TODO: serialize warning?
+    //     return value;
+    //   }
+    // }
   },
   'date-time': {
     fromICAL: function (value) {
@@ -264,43 +264,43 @@ const ICalValues: DesignValue = {
         return value[15] && value[15] === 'Z' ? result + 'Z' : result;
       }
     },
-    toICAL: function (value) {
-      // from: 2012-09-01T13:00:00
-      // to: 20120901T130000
-      const len = value.length;
-      if (len == 10 && !STRICT) {
-        return ICalValues.date.toICAL!(value);
-      } else if (len >= 19) {
-        const result =
-          value.substr(0, 4) +
-          value.substr(5, 2) +
-          value.substr(8, 5) + // grab the (DDTHH) segment
-          value.substr(14, 2) + // MM
-          value.substr(17, 2); // SS
-        return value[19] && value[19] === 'Z' ? result + 'Z' : result;
-      } else {
-        // TODO: error
-        return value;
-      }
-    },
+    // toICAL: function (value) {
+    //   // from: 2012-09-01T13:00:00
+    //   // to: 20120901T130000
+    //   const len = value.length;
+    //   if (len == 10 && !STRICT) {
+    //     return ICalValues.date.toICAL!(value);
+    //   } else if (len >= 19) {
+    //     const result =
+    //       value.substr(0, 4) +
+    //       value.substr(5, 2) +
+    //       value.substr(8, 5) + // grab the (DDTHH) segment
+    //       value.substr(14, 2) + // MM
+    //       value.substr(17, 2); // SS
+    //     return value[19] && value[19] === 'Z' ? result + 'Z' : result;
+    //   } else {
+    //     // TODO: error
+    //     return value;
+    //   }
+    // },
     decorate: function (value, prop) {
       if (STRICT) {
         return fromDateTimeString(value, prop);
       } else {
         return ICalTimeFromStr(value, prop);
       }
-    },
-    undecorate: function (value) {
-      return value.toString();
     }
+    // undecorate: function (value) {
+    //   return value.toString();
+    // }
   },
   duration: {
     decorate: function (value) {
       return ICalDurationFromStr(value);
-    },
-    undecorate: function (value) {
-      return value.toString();
     }
+    // undecorate: function (value) {
+    //   return value.toString();
+    // }
   },
   period: {
     fromICAL: function (value) {
@@ -311,61 +311,61 @@ const ICalValues: DesignValue = {
       }
       return parts as ICalPeriodData;
     },
-    toICAL: function (parts) {
-      if (!STRICT && parts[0].length == 10) {
-        parts[0] = ICalValues.date.toICAL!(parts[0]);
-      } else {
-        parts[0] = ICalValues['date-time'].toICAL!(parts[0]);
-      }
-      if (!isValueString(parts[1])) {
-        if (!STRICT && parts[1].length == 10) {
-          parts[1] = ICalValues.date.toICAL!(parts[1]);
-        } else {
-          parts[1] = ICalValues['date-time'].toICAL!(parts[1]);
-        }
-      }
-      return parts.join('/');
-    },
+    // toICAL: function (parts) {
+    //   if (!STRICT && parts[0].length == 10) {
+    //     parts[0] = ICalValues.date.toICAL!(parts[0]);
+    //   } else {
+    //     parts[0] = ICalValues['date-time'].toICAL!(parts[0]);
+    //   }
+    //   if (!isValueString(parts[1])) {
+    //     if (!STRICT && parts[1].length == 10) {
+    //       parts[1] = ICalValues.date.toICAL!(parts[1]);
+    //     } else {
+    //       parts[1] = ICalValues['date-time'].toICAL!(parts[1]);
+    //     }
+    //   }
+    //   return parts.join('/');
+    // },
     decorate: function (value, prop) {
       return ICalPeriodFromJson(value, prop!, !STRICT);
-    },
-    undecorate: function (value) {
-      return value.toJSON();
     }
+    // undecorate: function (value) {
+    //   return value.toJSON();
+    // }
   },
   recur: {
     fromICAL: function (string) {
       return ICalRecurStrToData(string, true);
     },
-    toICAL: function (data) {
-      let str = '';
-      for (const k in data) {
-        /* istanbul ignore if */
-        if (!Object.prototype.hasOwnProperty.call(data, k)) continue;
-        let val = data[k];
-        if (k == 'until') {
-          if (val.length > 10) {
-            val = ICalValues['date-time'].toICAL!(val);
-          } else {
-            val = ICalValues.date.toICAL!(val);
-          }
-        } else if (k == 'wkst') {
-          if (typeof val === 'number') {
-            val = numericDayToIcalDay(val);
-          }
-        } else if (Array.isArray(val)) {
-          val = val.join(',');
-        }
-        str += k.toUpperCase() + '=' + val + ';';
-      }
-      return str.substr(0, str.length - 1);
-    },
+    // toICAL: function (data) {
+    //   let str = '';
+    //   for (const k in data) {
+    //     /* istanbul ignore if */
+    //     if (!Object.prototype.hasOwnProperty.call(data, k)) continue;
+    //     let val = data[k];
+    //     if (k == 'until') {
+    //       if (val.length > 10) {
+    //         val = ICalValues['date-time'].toICAL!(val);
+    //       } else {
+    //         val = ICalValues.date.toICAL!(val);
+    //       }
+    //     } else if (k == 'wkst') {
+    //       if (typeof val === 'number') {
+    //         val = numericDayToIcalDay(val);
+    //       }
+    //     } else if (Array.isArray(val)) {
+    //       val = val.join(',');
+    //     }
+    //     str += k.toUpperCase() + '=' + val + ';';
+    //   }
+    //   return str.substr(0, str.length - 1);
+    // },
     decorate: function decorate(value) {
       return ICalRecurFromData(value);
-    },
-    undecorate: function (recur) {
-      return recur.toJSON();
     }
+    // undecorate: function (recur) {
+    //   return recur.toJSON();
+    // }
   },
   time: {
     fromICAL: function (value) {
@@ -378,17 +378,17 @@ const ICalValues: DesignValue = {
       // HH::MM::SSZ?
       const result = value.substr(0, 2) + ':' + value.substr(2, 2) + ':' + value.substr(4, 2);
       return value[6] === 'Z' ? result + 'Z' : result;
-    },
-    toICAL: function (value) {
-      // from: HH:MM:SS(Z)?
-      // to: MMHHSS(Z)?
-
-      // TODO: parser exception?
-      if (value.length < 8) return value;
-
-      const result = value.substr(0, 2) + value.substr(3, 2) + value.substr(6, 2);
-      return value[8] === 'Z' ? result + 'Z' : result;
     }
+    // toICAL: function (value) {
+    //   // from: HH:MM:SS(Z)?
+    //   // to: MMHHSS(Z)?
+
+    //   // TODO: parser exception?
+    //   if (value.length < 8) return value;
+
+    //   const result = value.substr(0, 2) + value.substr(3, 2) + value.substr(6, 2);
+    //   return value[8] === 'Z' ? result + 'Z' : result;
+    // }
   }
 };
 

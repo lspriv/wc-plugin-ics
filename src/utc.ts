@@ -114,9 +114,9 @@ export class UtcOffset {
   /**
    * The iCalendar string representation of this utc-offset.
    */
-  toICALString() {
-    return ICalendar.value['utc-offset'].toICAL!(this.toString());
-  }
+  // toICALString() {
+  //   return ICalendar.value['utc-offset'].toICAL!(this.toString());
+  // }
 
   /**
    * The string representation of this utc-offset.
