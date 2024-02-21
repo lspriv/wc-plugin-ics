@@ -8,6 +8,7 @@
 		"navigationBarTitleText": "wc plugin ics",
 		"navigationBarTextStyle": "black"
 	},
+	"darkmode": true,
   "lazyCodeLoading": "requiredComponents",
 	"sitemapLocation": "sitemap.json"
 }

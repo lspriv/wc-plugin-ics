@@ -9,7 +9,7 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
-import sourcemaps from 'rollup-plugin-sourcemaps';
+// import sourcemaps from 'rollup-plugin-sourcemaps';
 import clear from 'rollup-plugin-cleaner';
 import size from 'rollup-plugin-filesize';
 import terser from '@rollup/plugin-terser';
@@ -40,8 +40,8 @@ export default {
   output: [
     {
       file: `${OUTDIR}/index.js`,
-      format: 'cjs',
-      sourcemap: true
+      format: 'cjs'
+      // sourcemap: true
     }
   ],
   treeshake: {
@@ -81,7 +81,7 @@ export default {
           comments: /^!/
         }
       }),
-    sourcemaps(),
+    // sourcemaps(),
     size({
       reporter: function (options, bundle, info) {
         return `[${now().grey}] ` + `pack complete`.cyan + ` ${info.fileName.blue} ${info.bundleSize.magenta}`;
