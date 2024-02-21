@@ -55,6 +55,10 @@ Page({
 
 ics插件解析了ics源中 `vevent` `valarm` `vjournal` `vtodo` 这四种组件的信息并处理加入到日历中去，在默认选项下（即使用插件时没有配置选项），会将这四种组件的信息作为日程schedule加入到日历。
 
+> [!IMPORTANT]
+> 一定要将订阅源链接域名配置到小程序后台downloadFile合法域名
+> 操作：小程序后台->开发->开发设置->服务器域名->downloadFile合法域名
+
 ### 插件预设
 ics插件包里内置了一个有关中国节假日订阅的选项预设 `ICSCnPreset`
 
@@ -78,8 +82,9 @@ Page({
 - [`中国节假日补班日历`](https://github.com/lanceliao/china-holiday-calender)
 - [`中国节假日放假调休安排日历`](https://github.com/congqiu/ChineseHoliday)
 
-> [!TIP]
-> ics文件中vevent组件属性summary的值只要是 '节假日 \*\*' （节假日和后面有空格）这种格式，ICSCnPreset预设就可以使用
+> [!NOTE]
+> - ics文件中vevent组件属性summary的值只要是 '节假日 \*\*' （节假日和后面有空格）这种格式，ICSCnPreset预设就可以使用
+> - ICSCnPreset预设也有自己的选项配置
 
 ### 插件选项
 

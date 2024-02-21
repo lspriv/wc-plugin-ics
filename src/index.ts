@@ -4,8 +4,8 @@
  * See File LICENSE for detail or copy at https://opensource.org/licenses/MIT
  * @Description: 入口
  * @Author: lspriv
- * @LastEditTime: 2024-02-19 21:11:20
+ * @LastEditTime: 2024-02-21 15:36:13
  */
 export * from './plugin';
 
-export { ICSCnPreset } from './presets';
+export { ICSCnPreset, type ICSCnPresetOptions } from './presets';
