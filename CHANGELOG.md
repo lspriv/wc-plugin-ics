@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/lspriv/wc-plugin-ics/compare/v1.0.0...v1.1.0) (2024-02-21)
+
+
+### Features
+
+* iCSCnPreset预设新增配置选项 ([9abf472](https://github.com/lspriv/wc-plugin-ics/commit/9abf4722c9af09a9230c7b5675ce229abfbd9a8c))
+
 ## 1.0.0 (2024-02-20)
 
 
