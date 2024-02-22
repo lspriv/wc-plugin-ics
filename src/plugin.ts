@@ -4,7 +4,7 @@
  * See File LICENSE for detail or copy at https://opensource.org/licenses/MIT
  * @Description: Description
  * @Author: lspriv
- * @LastEditTime: 2024-02-20 19:42:01
+ * @LastEditTime: 2024-02-22 12:54:20
  */
 import {
   type Plugin,
@@ -135,7 +135,7 @@ export class ICSPlugin implements Plugin {
 
   private options: ICSOpts;
 
-  private subcribes: Array<ICSSubcribe> = [];
+  private subcribes?: Array<ICSSubcribe> = [];
 
   marks: Map<string, ICSMarkSets> = new Map();
 
@@ -143,7 +143,7 @@ export class ICSPlugin implements Plugin {
 
   // series: CurrentSeries = {};
 
-  service: PluginService;
+  service?: PluginService;
 
   constructor(options?: ICSOpts | ICSOptsGeneration) {
     this.options = this.formOptions(execPossibleFunc(options, this));
@@ -206,7 +206,7 @@ export class ICSPlugin implements Plugin {
       };
 
       this.generateMarks(vcalendar.components, _subscribe);
-      this.subcribes.push(_subscribe);
+      this.subcribes!.push(_subscribe);
     }
   }
 
@@ -258,7 +258,7 @@ export class ICSPlugin implements Plugin {
       ...typeOpts,
       ...execPossibleFunc(options, this)
     };
-    if (subscribe.icskey && this.subcribes.find(item => item.icskey === subscribe.icskey)) {
+    if (subscribe.icskey && this.subcribes!.find(item => item.icskey === subscribe.icskey)) {
       throw new Error('ics file loaded');
     }
     const vcalendar = await this.loadICS(subscribe);
@@ -267,13 +267,13 @@ export class ICSPlugin implements Plugin {
       calname: subscribe.calname || vcalendar['x-wr-calname'],
       icskey: subscribe.icskey || `${vcalendar.prodid}@${vcalendar.version}`
     };
-    this.subcribes.push(_subcribe);
+    this.subcribes!.push(_subcribe);
     const { dates, annuals } = this.generateMarks(vcalendar.components, _subcribe);
 
-    if (this.service.component._loaded_) {
+    if (this.service!.component._loaded_) {
       await promises([
-        dates.length && this.service.updateDates(dates),
-        annuals.length && this.service.updateAnnuals(annuals)
+        dates.length && this.service!.updateDates(dates),
+        annuals.length && this.service!.updateAnnuals(annuals)
       ]);
     }
   }
@@ -449,6 +449,13 @@ export class ICSPlugin implements Plugin {
       }
     }
     return flag ? { marks } : null;
+  }
+
+  PLUGIN_ON_DETACHED() {
+    this.service = void 0;
+    this.subcribes = void 0;
+    this.marks.clear();
+    this.annualMarks.clear();
   }
 }
 
