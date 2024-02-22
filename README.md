@@ -26,8 +26,7 @@ const { ICSPlugin } = require('@lspriv/wc-plugin-ics');
 
 // ics插件其他选项请看后面
 WxCalendar.use(ICSPlugin, {
-  subcribes: [{ source: 'https://***.***.ics' }],
-  ...
+  subcribes: [{ source: 'https://***.***.ics' }]
 });
 
 Page({
@@ -39,8 +38,7 @@ Page({
 const { WxCalendar } = require('@lspriv/wx-calendar/lib');
 const { ICSPlugin, ICS_PLUGIN_KEY } = require('@lspriv/wc-plugin-ics');
 
-// 插件选项看后面，可传可不传
-WxCalendar.use(ICSPlugin, { ... });
+WxCalendar.use(ICSPlugin);
 
 Page({
   handleCalendarLoad() {
