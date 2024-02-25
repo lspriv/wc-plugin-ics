@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/lspriv/wc-plugin-ics/compare/v1.1.0...v1.2.0) (2024-02-25)
+
+
+### Features
+
+* 新增remove方法 ([622800f](https://github.com/lspriv/wc-plugin-ics/commit/622800f56a548181a0cbd2ba3b35da9b2bc48620))
+
 ## [1.1.0](https://github.com/lspriv/wc-plugin-ics/compare/v1.0.0...v1.1.0) (2024-02-21)
 
 
