@@ -4,7 +4,7 @@
  * See File LICENSE for detail or copy at https://opensource.org/licenses/MIT
  * @Description: Description
  * @Author: lspriv
- * @LastEditTime: 2024-02-24 16:04:13
+ * @LastEditTime: 2024-02-25 13:08:58
  */
 import { WcMark, offsetDate } from '@lspriv/wx-calendar/lib';
 import { dateFmtStr } from './helpers';
@@ -118,7 +118,7 @@ export function ICSCnPreset(plugin: ICSPlugin | ICSCnPresetOptions): ICSOpts | (
         series!.name = name;
         series!.date = date;
 
-        if (!seriedate || seriename !== name || Math.abs(date - seriedate) > 86400000) {
+        if (!isWork && (!seriedate || seriename !== name || Math.abs(date - seriedate) > 86400000)) {
           mark.festival = { text: name, color: config.festivalColor, key };
           flag = true;
         }
