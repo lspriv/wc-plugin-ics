@@ -3,7 +3,7 @@
  * @Author: lishen
  * @Date: 2023-08-31 16:46:44
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2024-02-19 21:34:48
+ * @LastEditTime: 2024-02-25 08:56:45
  */
 const { WxCalendar } = require('@lspriv/wx-calendar/lib');
 const { ICSPlugin, ICS_PLUGIN_KEY, ICSCnPreset } = require('../../plugins/wc-plugin-ics/index');
@@ -32,5 +32,8 @@ Page({
   },
   handleViewChange({ detail }) {
     console.log('calendar-view-change', detail);
+  },
+  handleSchedule(e) {
+    console.log('handleSchedule', e);
   }
 });

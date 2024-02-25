@@ -26,8 +26,7 @@ const { ICSPlugin } = require('@lspriv/wc-plugin-ics');
 
 // ics插件其他选项请看后面
 WxCalendar.use(ICSPlugin, {
-  subcribes: [{ source: 'https://***.***.ics' }],
-  ...
+  subcribes: [{ source: 'https://***.***.ics' }]
 });
 
 Page({
@@ -39,8 +38,7 @@ Page({
 const { WxCalendar } = require('@lspriv/wx-calendar/lib');
 const { ICSPlugin, ICS_PLUGIN_KEY } = require('@lspriv/wc-plugin-ics');
 
-// 插件选项看后面，可传可不传
-WxCalendar.use(ICSPlugin, { ... });
+WxCalendar.use(ICSPlugin);
 
 Page({
   handleCalendarLoad() {
@@ -361,6 +359,74 @@ type WcAnnualMark = {
 (options: ICSSubcribeOpts, plugin: ICSPlugin) => void;
 // ICSSubcribeOpts就是 这个订阅的subscribe选项
 ```
+### 插件方法
+
+[***`load`***](#load) 加载订阅, 返回icskey
+```typescript
+load(subscribe: ICSSubcribe | ICSSubcribeGeneration): Promise<string>;
+load(source: string, type?: ICSSubcribe['kind'], options?: ICSSubcribeOpts | ICSSubcribeOptsGeneration): Promise<string>;
+```
+
+```javascript
+const { WxCalendar } = require('@lspriv/wx-calendar/lib');
+const { ICSPlugin, ICS_PLUGIN_KEY, ICSCnPreset } = require('@lspriv/wc-plugin-ics');
+
+// 使用ICSCnPreset预设
+WxCalendar.use(ICSPlugin, ICSCnPreset);
+
+Page({
+  handleCalendarLoad() {
+    const calendar = this.selectComponent('#calendar');
+    const ics = calendar.getPlugin(ICS_PLUGIN_KEY);
+    
+    ics.load('https://***.***.ics');
+    // 或者
+    ics.load('https://***.***.ics', 'link', { ... });
+    // 或者
+    ics.load({ source: 'https://***.***.ics', ... })
+    // 或者
+    ics.load((plugin) => {
+      return {
+        source: 'https://***.***.ics',
+        ...
+      };
+    });
+  }
+});
+```
+
+[***`remove`***](#load) 移除订阅
+```typescript
+remove(icskey: string): Promise<void>;
+```
+
+```javascript
+const { WxCalendar } = require('@lspriv/wx-calendar/lib');
+const { ICSPlugin, ICS_PLUGIN_KEY, ICSCnPreset } = require('@lspriv/wc-plugin-ics');
+
+// 使用ICSCnPreset预设
+WxCalendar.use(ICSPlugin, ICSCnPreset);
+
+Page({
+  async handleCalendarLoad() {
+    const calendar = this.selectComponent('#calendar');
+    const ics = calendar.getPlugin(ICS_PLUGIN_KEY);
+    
+    const icskey = await ics.load({ source: 'https://***.***.ics' });
+    setTimeout(() => {
+      ics.remove(icskey);
+    }, 5000);
+
+    // 或者指定 icskey，推荐
+    await ics.load({ source: 'https://***.***.ics', icskey: 'key1' });
+    setTimeout(() => {
+      ics.remove('key1');
+    }, 5000);
+
+  }
+});
+```
+
 ### 关于
 
 >     有任何问题或是需求请到 `Issues` 面板提交

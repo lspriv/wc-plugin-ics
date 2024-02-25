@@ -1,3 +1,5 @@
+import { dateFormatStr } from '@lspriv/wc-shared';
+import { CalendarDay } from '@lspriv/wx-calendar/lib';
 import { ICalError } from './error';
 /**
  * Checks if the given type is of the number type and also NaN.
@@ -95,4 +97,7 @@ export const unescapedIndexOf = (buffer: string, search: string, pos: number) =>
   return -1;
 };
 
-export type Union<T> = T extends readonly [infer R, ...infer P] ? R | Union<P> : never;
+// export type Union<T> = T extends readonly [infer R, ...infer P] ? R | Union<P> : never;
+
+export const dateFmtStr = (str: string, date: CalendarDay) =>
+  dateFormatStr(str) || `${date.year}-${date.month}-${date.day} 00:00:00`;

@@ -3,6 +3,7 @@
     id="calendar" 
     bindload="handleLoad"
     bindchange="handleChange" 
-    bindviewchange="handleViewChange">
+    bindviewchange="handleViewChange"
+    bindschedule="handleSchedule">
   </calendar>
 </view>
