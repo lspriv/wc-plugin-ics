@@ -4,9 +4,10 @@
  * See File LICENSE for detail or copy at https://opensource.org/licenses/MIT
  * @Description: Description
  * @Author: lspriv
- * @LastEditTime: 2024-02-21 15:33:57
+ * @LastEditTime: 2024-02-24 16:04:13
  */
-import { WcMark } from '@lspriv/wx-calendar/lib';
+import { WcMark, offsetDate } from '@lspriv/wx-calendar/lib';
+import { dateFmtStr } from './helpers';
 import { ICSOpts, ICSMark, CurrentSeries, ICSPlugin } from './plugin';
 
 export interface ICSCnPresetOptions {
@@ -97,7 +98,7 @@ export function ICSCnPreset(plugin: ICSPlugin | ICSCnPresetOptions): ICSOpts | (
     let series: CurrentSeries = {};
 
     return {
-      event: function (props) {
+      event: function (props, key) {
         const summary = props.summary as string;
         const isWork = config.workPattern!.test(summary);
         const isRest = config.restPattern!.test(summary);
@@ -118,13 +119,13 @@ export function ICSCnPreset(plugin: ICSPlugin | ICSCnPresetOptions): ICSOpts | (
         series!.date = date;
 
         if (!seriedate || seriename !== name || Math.abs(date - seriedate) > 86400000) {
-          mark.festival = { text: name, color: config.festivalColor, key: props.icskey };
+          mark.festival = { text: name, color: config.festivalColor, key };
           flag = true;
         }
 
         // 生成角标
         if (isWork || isRest) {
-          mark.corner = { key: props.icskey } as WcMark;
+          mark.corner = { key } as WcMark;
           mark.corner.text = isWork ? config.cornerWorkText! : config.cornerRestText!;
           mark.corner.color = isWork ? config.cornerWorkColor : config.cornerRestColor;
           flag = true;
@@ -136,7 +137,11 @@ export function ICSCnPreset(plugin: ICSPlugin | ICSCnPresetOptions): ICSOpts | (
             text: props.description,
             color: config.eventScheduleColor,
             bgColor: config.eventScheduleBgColor,
-            key: props.icskey
+            key,
+            dtstart: dateFmtStr(props.dtstart, props.date!),
+            dtend: dateFmtStr(props.dtend, offsetDate(props.date!, 1)),
+            summary: props.summary,
+            description: props.description
           };
         }
 
