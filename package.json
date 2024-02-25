@@ -31,8 +31,8 @@
   "homepage": "https://github.com/lspriv/wc-plugin-ics#readme",
   "devDependencies": {
     "@inquirer/prompts": "^3.3.2",
-    "@lspriv/wc-shared": "^1.1.0",
-    "@lspriv/wx-calendar": "^1.6.1-alpha.0",
+    "@lspriv/wc-shared": "^1.2.0",
+    "@lspriv/wx-calendar": "^1.6.1",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
@@ -60,6 +60,6 @@
     "typescript": "^5.3.3"
   },
   "peerDependencies": {
-    "@lspriv/wx-calendar": "^1.6.0"
+    "@lspriv/wx-calendar": "^1.6.1"
   }
 }

@@ -1,5 +1,6 @@
+import type { Union } from '@lspriv/wx-calendar/lib';
 import { ICalError } from './error';
-import { strictParseInt, clone, Union } from './helpers';
+import { strictParseInt, clone } from './helpers';
 import { ICalendar } from './design';
 import {
   ICalTime,
