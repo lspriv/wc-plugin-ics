@@ -5,6 +5,8 @@
 
 小程序日历 [`wx-calendar`](https://github.com/lspriv/wx-calendar) ICS订阅插件
 
+[![pFaK8mj.png](https://s11.ax1x.com/2024/02/25/pFaK8mj.png)](https://imgse.com/i/pFaK8mj)
+
 ### 使用
 - 小程序基础库 `SDKVersion` >= 3.0.0
 - 日历组件 [`wx-calendar`](https://github.com/lspriv/wx-calendar) >= 1.6.0
@@ -129,7 +131,7 @@ const icsOpts = {
 }
 ```
 
-#### Event选项
+#### 组件VEvent选项
 [***`event`***](#event) *处理 vevent 组件*
 ```typescript
 (props: EventComponentProps) => ICSMark | undefined;
@@ -185,7 +187,7 @@ string | ((props: EventComponentProps) => string | undefined);
 string | ((props: EventComponentProps) => string | undefined);
 ```
 
-#### Alarm选项
+#### 组件VAlarm选项
 [***`alarm`***](#alarm) *处理 valarm 组件*
 ```typescript
 (props: AlarmComponentProps) => ICSMark | undefined;
@@ -234,7 +236,7 @@ string | ((props: AlarmComponentProps) => string | undefined);
 string | ((props: AlarmComponentProps) => string | undefined);
 ```
 
-#### Todo选项
+#### 组件VTodo选项
 [***`todo`***](#todo) *处理 valarm 组件*
 ```typescript
 (props: TodoComponentProps) => ICSMark | undefined;
@@ -282,7 +284,7 @@ string | ((props: TodoComponentProps) => string | undefined);
 ```typescript
 string | ((props: TodoComponentProps) => string | undefined);
 ```
-#### Journal选项
+#### 组件VJournal选项
 [***`journal`***](#journal) *处理 vjournal 组件*
 ```typescript
 (props: JournalComponentProps) => ICSMark | undefined;
