@@ -4,7 +4,7 @@
  * See File LICENSE for detail or copy at https://opensource.org/licenses/MIT
  * @Description: Description
  * @Author: lspriv
- * @LastEditTime: 2024-02-25 09:36:57
+ * @LastEditTime: 2024-02-25 12:38:08
  */
 import {
   type Plugin,
@@ -27,8 +27,7 @@ import {
   promises,
   offsetDate,
   getMarkKey,
-  formDateByStrKey,
-  notEmptyObject
+  formDateByStrKey
 } from '@lspriv/wx-calendar/lib';
 import { wxPromisify } from '@lspriv/wc-shared';
 import { dateFmtStr } from './helpers';
