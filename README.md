@@ -5,6 +5,8 @@
 
 小程序日历 [`wx-calendar`](https://github.com/lspriv/wx-calendar) ICS订阅插件
 
+[![pFaK8mj.png](https://s11.ax1x.com/2024/02/25/pFaK8mj.png)](https://imgse.com/i/pFaK8mj)
+
 ### 使用
 - 小程序基础库 `SDKVersion` >= 3.0.0
 - 日历组件 [`wx-calendar`](https://github.com/lspriv/wx-calendar) >= 1.6.0
