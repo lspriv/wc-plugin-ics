@@ -101,7 +101,7 @@ Array<{
 }>
 ```
 > [!NOTE]
-> `COMMON_OPTIONS` 也包含了 [`Event选项`](#Event选项) [`Alarm选项`](#Alarm选项) [`Todo选项`](#Todo选项) [`Journal选项`](#Journal选项) [`其他选项`](#其他选项) 中的所有选项，即既可以给全局做这些选项配置，也可以单独给某个订阅做这些配置
+> `COMMON_OPTIONS` 也包含了 [`VEvent选项`](#vevent选项) [`VAlarm选项`](#valarm选项) [`VTodo选项`](#vtodo选项) [`VJournal选项`](#vjournal选项) [`其他选项`](#其他选项) 中的所有选项，即既可以给全局做这些选项配置，也可以单独给某个订阅做这些配置
 > 
 在处理某个订阅时，这个订阅的 `subcribe选项` 会覆盖掉最外层的选项配置
 
@@ -131,7 +131,7 @@ const icsOpts = {
 }
 ```
 
-#### 组件VEvent选项
+#### VEvent选项
 [***`event`***](#event) *处理 vevent 组件*
 ```typescript
 (props: EventComponentProps) => ICSMark | undefined;
@@ -187,7 +187,7 @@ string | ((props: EventComponentProps) => string | undefined);
 string | ((props: EventComponentProps) => string | undefined);
 ```
 
-#### 组件VAlarm选项
+#### VAlarm选项
 [***`alarm`***](#alarm) *处理 valarm 组件*
 ```typescript
 (props: AlarmComponentProps) => ICSMark | undefined;
@@ -236,7 +236,7 @@ string | ((props: AlarmComponentProps) => string | undefined);
 string | ((props: AlarmComponentProps) => string | undefined);
 ```
 
-#### 组件VTodo选项
+#### VTodo选项
 [***`todo`***](#todo) *处理 valarm 组件*
 ```typescript
 (props: TodoComponentProps) => ICSMark | undefined;
@@ -284,7 +284,7 @@ string | ((props: TodoComponentProps) => string | undefined);
 ```typescript
 string | ((props: TodoComponentProps) => string | undefined);
 ```
-#### 组件VJournal选项
+#### VJournal选项
 [***`journal`***](#journal) *处理 vjournal 组件*
 ```typescript
 (props: JournalComponentProps) => ICSMark | undefined;
