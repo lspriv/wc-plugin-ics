@@ -4,7 +4,7 @@
  * See File LICENSE for detail or copy at https://opensource.org/licenses/MIT
  * @Description: Description
  * @Author: lspriv
- * @LastEditTime: 2024-02-25 12:38:08
+ * @LastEditTime: 2024-05-08 00:02:48
  */
 import {
   type Plugin,
@@ -85,7 +85,7 @@ export type ICSSubcribe = ICSSubcribeOpts & {
 };
 
 interface JCalPropDict {
-  [x: string]: any;
+  [x: string | symbol]: any;
   compname: string;
   icskey?: string;
   date?: CalendarDay;
@@ -149,7 +149,7 @@ interface ICSUpdates {
   annuals: Array<number>;
 }
 
-const getICSKeyPrefix = (icskey: string) => `[${icskey}]`;
+// const getICSKeyPrefix = (icskey: string) => `[${icskey}]`;
 
 const generateKey = (props: JCalPropDict, icskey: string) => {
   return `[${icskey}]${props.uid || `${props.date!.year}_${props.date!.month}_${props.date!.day}`}`;

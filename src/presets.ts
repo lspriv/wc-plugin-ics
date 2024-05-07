@@ -4,7 +4,7 @@
  * See File LICENSE for detail or copy at https://opensource.org/licenses/MIT
  * @Description: Description
  * @Author: lspriv
- * @LastEditTime: 2024-02-25 13:08:58
+ * @LastEditTime: 2024-05-08 00:00:40
  */
 import { WcMark, offsetDate } from '@lspriv/wx-calendar/lib';
 import { dateFmtStr } from './helpers';
@@ -56,13 +56,13 @@ export interface ICSCnPresetOptions {
 const FtvPattern = /^[^\s]+/;
 
 /** 补班｜加班｜上班 */
-const workPattern = /(\u8865|\u52a0|\u4e0a)\u73ed/;
+const WorkPattern = /(\u8865|\u52a0|\u4e0a)\u73ed/;
 
 /** 假期｜假日｜放假｜调休｜休息 */
-const restPattern = /(\u5047\u671f|\u5047\u65e5|\u653e\u5047|\u8c03\u4f11|\u4f11\u606f)/;
+const RestPattern = /(\u5047\u671f|\u5047\u65e5|\u653e\u5047|\u8c03\u4f11|\u4f11\u606f)/;
 
-const WORK_KEY = '__CN_PRE_WORK__';
-const REST_KEY = '__CN_PRE_REST__';
+const WORK_KEY = Symbol('CN_WORK');
+const REST_KEY = Symbol('CN_REST');
 
 export function ICSCnPreset(plugin: ICSPlugin): ICSOpts;
 export function ICSCnPreset(options: ICSCnPresetOptions): (plugin?: ICSPlugin) => ICSOpts;
@@ -78,8 +78,8 @@ export function ICSCnPreset(plugin: ICSPlugin | ICSCnPresetOptions): ICSOpts | (
     cornerRestText: opts?.cornerRestText || '休',
     cornerWorkColor: opts?.cornerWorkColor || '#f37b1d',
     cornerRestColor: opts?.cornerRestColor || '#61b057',
-    workPattern: opts?.workPattern || workPattern,
-    restPattern: opts?.restPattern || restPattern,
+    workPattern: opts?.workPattern || WorkPattern,
+    restPattern: opts?.restPattern || RestPattern,
     eventSchedule: opts?.eventSchedule ?? true,
     eventScheduleColor: opts?.eventScheduleColor,
     eventScheduleBgColor: opts?.eventScheduleBgColor,
