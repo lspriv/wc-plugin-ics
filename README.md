@@ -84,7 +84,7 @@ Page({
 
 > [!NOTE]
 > - ics文件中vevent组件属性summary的值只要是 '节假日 \*\*' （节假日和后面有空格）这种格式，ICSCnPreset预设就可以使用
-> - ICSCnPreset预设也有自己的选项配置
+> - ICSCnPreset预设也有自己的选项配置，[配置详情](https://github.com/lspriv/wc-plugin-ics/blob/master/src/presets.ts#L13)
 
 ### 插件选项
 
