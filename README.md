@@ -5,6 +5,8 @@
 
 小程序日历 [`wx-calendar`](https://github.com/lspriv/wx-calendar) ICS订阅插件
 
+[![pFaK8mj.png](https://s11.ax1x.com/2024/02/25/pFaK8mj.png)](https://imgse.com/i/pFaK8mj)
+
 ### 使用
 - 小程序基础库 `SDKVersion` >= 3.0.0
 - 日历组件 [`wx-calendar`](https://github.com/lspriv/wx-calendar) >= 1.6.0
@@ -82,7 +84,7 @@ Page({
 
 > [!NOTE]
 > - ics文件中vevent组件属性summary的值只要是 '节假日 \*\*' （节假日和后面有空格）这种格式，ICSCnPreset预设就可以使用
-> - ICSCnPreset预设也有自己的选项配置
+> - ICSCnPreset预设也有自己的选项配置，[配置详情](https://github.com/lspriv/wc-plugin-ics/blob/master/src/presets.ts#L13)
 
 ### 插件选项
 
@@ -99,7 +101,7 @@ Array<{
 }>
 ```
 > [!NOTE]
-> `COMMON_OPTIONS` 也包含了 [`Event选项`](#Event选项) [`Alarm选项`](#Alarm选项) [`Todo选项`](#Todo选项) [`Journal选项`](#Journal选项) [`其他选项`](#其他选项) 中的所有选项，即既可以给全局做这些选项配置，也可以单独给某个订阅做这些配置
+> `COMMON_OPTIONS` 也包含了 [`VEvent选项`](#vevent选项) [`VAlarm选项`](#valarm选项) [`VTodo选项`](#vtodo选项) [`VJournal选项`](#vjournal选项) [`其他选项`](#其他选项) 中的所有选项，即既可以给全局做这些选项配置，也可以单独给某个订阅做这些配置
 > 
 在处理某个订阅时，这个订阅的 `subcribe选项` 会覆盖掉最外层的选项配置
 
@@ -129,7 +131,7 @@ const icsOpts = {
 }
 ```
 
-#### Event选项
+#### VEvent选项
 [***`event`***](#event) *处理 vevent 组件*
 ```typescript
 (props: EventComponentProps) => ICSMark | undefined;
@@ -185,7 +187,7 @@ string | ((props: EventComponentProps) => string | undefined);
 string | ((props: EventComponentProps) => string | undefined);
 ```
 
-#### Alarm选项
+#### VAlarm选项
 [***`alarm`***](#alarm) *处理 valarm 组件*
 ```typescript
 (props: AlarmComponentProps) => ICSMark | undefined;
@@ -234,7 +236,7 @@ string | ((props: AlarmComponentProps) => string | undefined);
 string | ((props: AlarmComponentProps) => string | undefined);
 ```
 
-#### Todo选项
+#### VTodo选项
 [***`todo`***](#todo) *处理 valarm 组件*
 ```typescript
 (props: TodoComponentProps) => ICSMark | undefined;
@@ -282,7 +284,7 @@ string | ((props: TodoComponentProps) => string | undefined);
 ```typescript
 string | ((props: TodoComponentProps) => string | undefined);
 ```
-#### Journal选项
+#### VJournal选项
 [***`journal`***](#journal) *处理 vjournal 组件*
 ```typescript
 (props: JournalComponentProps) => ICSMark | undefined;
