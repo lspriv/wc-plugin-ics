@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/lspriv/wc-plugin-ics/compare/v1.2.0...v1.2.1) (2024-06-06)
+
+
+### Bug Fixes
+
+* 调整中国节假日预设 ([5b65339](https://github.com/lspriv/wc-plugin-ics/commit/5b653393a55216ff0ce78fb5b95ff5a86704b73f))
+
 ## [1.2.0](https://github.com/lspriv/wc-plugin-ics/compare/v1.1.0...v1.2.0) (2024-02-25)
 
 
