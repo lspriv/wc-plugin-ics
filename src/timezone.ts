@@ -64,10 +64,10 @@ export class ICalTimezone {
       }
 
       // Copy remaining passed properties
-      for (var key in OPTIONS) {
+      for (const key in OPTIONS) {
         /* istanbul ignore else */
-        if (OPTIONS.hasOwnProperty(key)) {
-          var prop = OPTIONS[key];
+        if (Object.prototype.hasOwnProperty.call(OPTIONS, key)) {
+          const prop = OPTIONS[key];
           if (data && prop in data) {
             this[prop] = data[prop];
           }

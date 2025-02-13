@@ -19,6 +19,7 @@ import {
   type WcAnnualMarks,
   type PluginService,
   type WcScheduleInfo,
+  type DateStyle,
   type Nullable,
   normalDate,
   isFunction,
@@ -397,7 +398,8 @@ export class ICSPlugin implements Plugin {
       }
       if (text) {
         const color = execPossibleFunc(options[`${type}FestivalColor`], props) || void 0;
-        mark.festival = { text, color, key: id };
+        mark.festival = { text, key: id };
+        if (color) mark.festival.style = { color };
         valid = true;
       }
     }
@@ -412,7 +414,8 @@ export class ICSPlugin implements Plugin {
       }
       if (text) {
         const color = execPossibleFunc(options[`${type}CornerColor`], props) || void 0;
-        mark.corner = { text, color, key: id };
+        mark.corner = { text, key: id };
+        if (color) mark.corner.style = { color };
         valid = true;
       }
     }
@@ -431,13 +434,16 @@ export class ICSPlugin implements Plugin {
         mark.schedule = {
           key: id,
           text,
-          color,
-          bgColor,
           dtstart: dateFmtStr(props.dtstart, props.date!),
           dtend: dateFmtStr(props.dtend, offsetDate(props.date!, 1)),
           summary: props.summary,
           description: props.description
         };
+        if (color) mark.schedule!.style = { color };
+        if (bgColor) {
+          mark.schedule.style = (mark.schedule.style || {}) as DateStyle;
+          mark.schedule.style.backgroundColor = bgColor;
+        }
         valid = true;
       }
     }
@@ -447,7 +453,7 @@ export class ICSPlugin implements Plugin {
 
   private collectMark(key: string, mark: ICSMark) {
     let m = this.marks.get(key);
-    m = m || { festival: [], corner: [], schedule: [] };
+    m = m || { festival: [], corner: [], schedule: [], solar: [], style: [] };
     if (mark.corner) m.corner.push(mark.corner);
     if (mark.festival) m.festival.push(mark.festival);
     if (mark.schedule) m.schedule.push(mark.schedule);
@@ -523,19 +529,20 @@ export class ICSPlugin implements Plugin {
     const flen = mark.festival.length;
     if (clen) {
       const corner = mark.corner[clen - 1];
-      result.corner = { text: corner.text, color: corner.color };
+      result.corner = { text: corner.text };
+      if (corner.style) result.corner.style = corner.style;
     }
     if (flen) {
       const festival = mark.festival[flen - 1];
-      result.festival = { text: festival.text, color: festival.color };
+      result.festival = { text: festival.text };
+      if (festival.style) result.festival.style = festival.style;
     }
     if (mark.schedule.length) {
       result.schedule = [
         ...mark.schedule.map(s => ({
           key: getMarkKey(s.key!, ICSPlugin.KEY),
           text: s.text,
-          color: s.color,
-          bgColor: s.bgColor
+          ...(s.style ? { style: s.style } : {})
         }))
       ];
     }

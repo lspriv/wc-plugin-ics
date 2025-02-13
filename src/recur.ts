@@ -83,8 +83,8 @@ export class ICalRecur implements ICalRecurDict {
   }
 
   fromData(data: ICalRecurDict) {
-    for (var key in data) {
-      var uckey = key.toUpperCase();
+    for (const key in data) {
+      const uckey = key.toUpperCase();
 
       if (uckey in partDesign) {
         if (Array.isArray(data[key])) {
@@ -122,7 +122,7 @@ export class ICalRecur implements ICalRecurDict {
 
     for (const k in this.parts) {
       /* istanbul ignore if */
-      if (!this.parts.hasOwnProperty(k)) continue;
+      if (!Object.prototype.hasOwnProperty.call(this.parts, k)) continue;
       const kparts = this.parts[k];
       if (Array.isArray(kparts) && kparts.length == 1) {
         res[k.toLowerCase()] = kparts[0];
@@ -204,7 +204,7 @@ const ALLOWED_FREQ = ['SECONDLY', 'MINUTELY', 'HOURLY', 'DAILY', 'WEEKLY', 'MONT
 type FrequencyValue = Union<typeof ALLOWED_FREQ>;
 
 const optionDesign = {
-  FREQ: function (value: string, dict: ICalRecurDict, fmtIcal?: boolean) {
+  FREQ: function (value: string, dict: ICalRecurDict) {
     // yes this is actually equal or faster then regex.
     // upside here is we can enumerate the valid values.
     if (ALLOWED_FREQ.indexOf(value as FrequencyValue) !== -1) {
@@ -213,10 +213,10 @@ const optionDesign = {
       throw new ICalError('invalid frequency "' + value + '" expected: "' + ALLOWED_FREQ.join(', ') + '"');
     }
   },
-  COUNT: function (value: string, dict: ICalRecurDict, fmtIcal?: boolean) {
+  COUNT: function (value: string, dict: ICalRecurDict) {
     dict.count = strictParseInt(value);
   },
-  INTERVAL: function (value: string, dict: ICalRecurDict, fmtIcal?: boolean) {
+  INTERVAL: function (value: string, dict: ICalRecurDict) {
     dict.interval = strictParseInt(value);
     if (dict.interval < 1) {
       // 0 or negative values are not allowed, some engines seem to generate
@@ -234,7 +234,7 @@ const optionDesign = {
       dict.until = ICalTimeFromStr(dict.until);
     }
   },
-  WKST: function (value: string, dict: ICalRecurDict, fmtIcal?: boolean) {
+  WKST: function (value: string, dict: ICalRecurDict) {
     if (VALID_DAY_NAMES.test(value)) {
       dict.wkst = icalDayToNumericDay(value);
     } else {
@@ -251,17 +251,17 @@ export const stringToData = (str: string, fmtIcal: boolean) => {
   const values = str.split(';');
   const len = values.length;
 
-  for (var i = 0; i < len; i++) {
-    var parts = values[i].split('=');
-    var ucname = parts[0].toUpperCase();
-    var lcname = parts[0].toLowerCase();
-    var name = fmtIcal ? lcname : ucname;
-    var value = parts[1];
+  for (let i = 0; i < len; i++) {
+    const parts = values[i].split('=');
+    const ucname = parts[0].toUpperCase();
+    const lcname = parts[0].toLowerCase();
+    const name = fmtIcal ? lcname : ucname;
+    const value = parts[1];
 
     if (ucname in partDesign) {
-      var partArr = value.split(',');
-      var partArrIdx = 0;
-      var partArrLen = partArr.length;
+      const partArr = value.split(',');
+      let partArrIdx = 0;
+      const partArrLen = partArr.length;
 
       for (; partArrIdx < partArrLen; partArrIdx++) {
         partArr[partArrIdx] = partDesign[ucname](partArr[partArrIdx]);

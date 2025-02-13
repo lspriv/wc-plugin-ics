@@ -148,8 +148,8 @@ type ParseParamResult = [result: Record<string, string | string[]>, value: strin
 const parseParameters = (line: string, start: number, designSet: DesignSet): ParseParamResult => {
   let lastParam = start;
   let pos: number | boolean = 0;
-  let delim = PARAM_NAME_DELIMITER;
-  let result = {};
+  const delim = PARAM_NAME_DELIMITER;
+  const result = {};
   let name: string;
   let lcname: string;
   let value: string | string[] = '';
@@ -186,7 +186,7 @@ const parseParameters = (line: string, start: number, designSet: DesignSet): Par
       }
     }
 
-    let nextChar = line[pos + 1];
+    const nextChar = line[pos + 1];
     if (nextChar === '"') {
       valuePos = pos + 2;
       pos = unescapedIndexOf(line, '"', valuePos);
@@ -210,7 +210,7 @@ const parseParameters = (line: string, start: number, designSet: DesignSet): Par
       valuePos = pos + 1;
       // move to next ";"
       let nextPos = unescapedIndexOf(line, PARAM_DELIMITER, valuePos);
-      let propValuePos = unescapedIndexOf(line, VALUE_DELIMITER, valuePos);
+      const propValuePos = unescapedIndexOf(line, VALUE_DELIMITER, valuePos);
       if (propValuePos !== -1 && nextPos > propValuePos) {
         // this is a delimiter in the property value, let's stop here
         nextPos = propValuePos;
@@ -232,7 +232,7 @@ const parseParameters = (line: string, start: number, designSet: DesignSet): Par
 
     value = rfc6868Escape(value);
     if (multiValue) {
-      let delimiter = mvdelim || multiValue;
+      const delimiter = mvdelim || multiValue;
       value = parseMultiValue(value, delimiter, type, [], null, designSet);
     } else {
       value = parseValue(value, type, designSet);
@@ -311,7 +311,7 @@ const handleContentLine = (line: string, state: ParseState) => {
     value = line.substring(valuePos + 1);
 
     if (name === 'begin') {
-      let newComponent: JCal = [value.toLowerCase(), [], []];
+      const newComponent: JCal = [value.toLowerCase(), [], []];
       if (state.stack.length === 1) {
         (state.component as Array<JCal>).push(newComponent);
       } else {
