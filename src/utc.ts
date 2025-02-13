@@ -1,11 +1,10 @@
 import { strictParseInt, trunc, pad2 } from './helpers';
-import { ICalendar } from './design';
 /**
  * Creates a new UtcOffset instance from the passed string.
  */
 export const fromString = str => {
   // -05:00
-  var options: UtcOffsetOptions = {};
+  const options: UtcOffsetOptions = {};
   //TODO: support seconds per rfc5545 ?
   options.factor = str[0] === '+' ? 1 : -1;
   options.hours = strictParseInt(str.substr(1, 2));
@@ -45,9 +44,9 @@ export class UtcOffset {
    */
   fromData(options?: UtcOffsetOptions) {
     if (options) {
-      for (var key in options) {
+      for (const key in options) {
         /* istanbul ignore else */
-        if (options.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(options, key)) {
           this[key] = options[key];
         }
       }
@@ -57,8 +56,8 @@ export class UtcOffset {
 
   normalize() {
     // Range: 97200 seconds (with 1 hour inbetween)
-    var secs = this.toSeconds();
-    var factor = this.factor;
+    let secs = this.toSeconds();
+    const factor = this.factor;
     while (secs < -43200) {
       // = UTC-12:00
       secs += 97200;
@@ -99,8 +98,8 @@ export class UtcOffset {
    * Compare this utc offset with another one.
    */
   compare(other: UtcOffset) {
-    var a = this.toSeconds();
-    var b = other.toSeconds();
+    const a = this.toSeconds();
+    const b = other.toSeconds();
     return +(a > b) - +(b > a);
   }
 
