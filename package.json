@@ -1,6 +1,6 @@
 {
   "name": "@lspriv/wc-plugin-ics",
-  "version": "1.2.2-alpha.0",
+  "version": "1.2.2",
   "description": "小程序日历组件订阅插件",
   "main": "./dist/index.js",
   "types": "./types/index.d.ts",
