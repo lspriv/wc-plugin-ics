@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/lspriv/wc-plugin-ics/compare/v1.2.1...v1.2.2) (2025-02-14)
+
+
+### Bug Fixes
+
+* 调整 ([0c6ea57](https://github.com/lspriv/wc-plugin-ics/commit/0c6ea5762c6eeb936c2e8b730295f21f1f21223e))
+
 ## [1.2.1](https://github.com/lspriv/wc-plugin-ics/compare/v1.2.0...v1.2.1) (2024-06-06)
 
 
