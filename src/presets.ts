@@ -6,7 +6,7 @@
  * @Author: lspriv
  * @LastEditTime: 2024-05-08 00:00:40
  */
-import { WcMark, offsetDate } from '@lspriv/wx-calendar/lib';
+import { DateStyle, WcMark, offsetDate } from '@lspriv/wx-calendar/lib';
 import { dateFmtStr } from './helpers';
 import { ICSOpts, ICSMark, CurrentSeries, ICSPlugin } from './plugin';
 
@@ -119,15 +119,16 @@ export function ICSCnPreset(plugin: ICSPlugin | ICSCnPresetOptions): ICSOpts | (
         series!.date = date;
 
         if (!isWork && (!seriedate || seriename !== name || Math.abs(date - seriedate) > 86400000)) {
-          mark.festival = { text: name, color: config.festivalColor, key };
+          mark.festival = { text: name, key, style: { color: config.festivalColor! } };
           flag = true;
         }
 
         // 生成角标
         if (isWork || isRest) {
-          mark.corner = { key } as WcMark;
+          mark.corner = { key, style: {} } as WcMark;
           mark.corner.text = isWork ? config.cornerWorkText! : config.cornerRestText!;
-          mark.corner.color = isWork ? config.cornerWorkColor : config.cornerRestColor;
+          (mark.corner.style as DateStyle)!.color = (isWork ? config.cornerWorkColor : config.cornerRestColor)!;
+
           flag = true;
         }
 
@@ -135,14 +136,18 @@ export function ICSCnPreset(plugin: ICSPlugin | ICSCnPresetOptions): ICSOpts | (
         if (config.eventSchedule && props.description) {
           mark.schedule = {
             text: props.description,
-            color: config.eventScheduleColor,
-            bgColor: config.eventScheduleBgColor,
             key,
             dtstart: dateFmtStr(props.dtstart, props.date!),
             dtend: dateFmtStr(props.dtend, offsetDate(props.date!, 1)),
             summary: props.summary,
             description: props.description
           };
+
+          if (config.eventScheduleColor) mark.schedule!.style = { color: config.eventScheduleColor };
+          if (config.eventScheduleBgColor) {
+            mark.schedule!.style = (mark.schedule!.style || {}) as DateStyle;
+            mark.schedule.style.backgroundColor = config.eventScheduleBgColor;
+          }
         }
 
         return flag ? mark : void 0;

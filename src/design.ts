@@ -14,12 +14,12 @@ import {
 } from './recur';
 
 const FROM_ICAL_NEWLINE = /\\\\|\\;|\\,|\\[Nn]/g;
-const TO_ICAL_NEWLINE = /\\|;|,|\n/g;
+// const TO_ICAL_NEWLINE = /\\|;|,|\n/g;
 
 const STRICT = true;
 export const DEFAULT_TYPE = 'unknown';
 
-export type DesignValueType<T, U extends any = any> = {
+export type DesignValueType<T, U = any> = {
   /** An array of valid values for this value type (currently unused) */
   values?: string[];
   /** A regular expression the value type must match (currently unused) */
@@ -72,7 +72,7 @@ const replaceNewline = (value: string, newline: RegExp, escape: string) => {
   return value.replace(newline, replaceNewlineReplace);
 };
 
-const createTextType = (fromline: RegExp, toline: RegExp): DesignValueType<string> => ({
+const createTextType = (fromline: RegExp): DesignValueType<string> => ({
   matches: /.*/,
   fromICAL: function (value, escape) {
     return replaceNewline(value, fromline, escape!);
@@ -194,7 +194,7 @@ const ICalValues: DesignValue = {
     //   return value.toString();
     // }
   },
-  text: createTextType(FROM_ICAL_NEWLINE, TO_ICAL_NEWLINE),
+  text: createTextType(FROM_ICAL_NEWLINE),
   uri: {},
   binary: {
     decorate: function (aString) {

@@ -38,8 +38,8 @@ export class ICalDuration {
     const props = ['weeks', 'days', 'hours', 'minutes', 'seconds', 'isNegative'];
     for (const key in props) {
       /* istanbul ignore if */
-      if (!props.hasOwnProperty(key)) continue;
-      var prop = props[key];
+      if (!Object.prototype.hasOwnProperty.call(props, key)) continue;
+      const prop = props[key];
       if (data && prop in data) {
         this[prop] = data[prop];
       } else {
@@ -52,7 +52,7 @@ export class ICalDuration {
    * The duration value expressed as a number of seconds.
    */
   toSeconds() {
-    var seconds = this.seconds + 60 * this.minutes + 3600 * this.hours + 86400 * this.days + 7 * 86400 * this.weeks;
+    const seconds = this.seconds + 60 * this.minutes + 3600 * this.hours + 86400 * this.days + 7 * 86400 * this.weeks;
     return this.isNegative ? -seconds : seconds;
   }
 

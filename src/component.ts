@@ -43,12 +43,12 @@ export class ICalComponent {
    */
   getFirstProperty(name: string) {
     if (name) {
-      var i = 0;
-      var props = this.jCal[PROPERTY_INDEX];
-      var len = props.length;
+      let i = 0;
+      const props = this.jCal[PROPERTY_INDEX];
+      const len = props.length;
       for (; i < len; i++) {
         if (props[i][NAME_INDEX] === name) {
-          var result = this.hydrateProperty(i);
+          const result = this.hydrateProperty(i);
           return result;
         }
       }
